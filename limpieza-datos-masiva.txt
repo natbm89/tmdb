@@ -1,0 +1,83 @@
+import json
+from datetime import datetime
+import boto3
+import io
+
+#funcion para limpiar una pelicula
+
+def limpiar_pelicula(pelicula):
+    campos = [
+        "budget", "genres", "id", "overview", "release_date", "revenue",
+        "runtime", "title", "vote_average", "vote_count", "origin_country"
+    ]
+    
+    pelicula_limpia = {campo: pelicula.get(campo, None) for campo in campos}
+    
+    # quedarnos solo con los nombres de los generos
+    # pelicula_limpia["genres"] = [g["name"] for g in pelicula.get("genres", []) if "name" in g]
+    
+    # Transformar 'release_date' a string "YYYY-MM-DD", o None si falla
+    fecha_str = pelicula.get("release_date", "")
+    try:
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        pelicula_limpia["release_date"] = fecha.isoformat()
+    except (ValueError, TypeError):
+        pelicula_limpia["release_date"] = None
+
+    return pelicula_limpia
+
+
+
+# def limpiar_fichero_peliculas(fichero_entrada, fichero_salida):
+#     #Cargar JSON
+#     with open(fichero_entrada, "r", encoding="utf-8") as f:
+#         lista_peliculas = json.load(f)
+    
+#     #Limpiar película
+#     peliculas_limpias = [limpiar_pelicula(p) for p in lista_peliculas]
+    
+#     #Guardar resultado en archivo nuevo
+#     with open(fichero_salida, "w", encoding="utf-8") as f:
+#         json.dump(peliculas_limpias, f, ensure_ascii=False, indent=2)
+
+#     return fichero_salida
+
+
+def limpiar_varios_archivos_s3(bucket_origen, prefix, bucket_destino, suffix="_limpio.json"):
+    s3 = boto3.client("s3")
+    
+    #Listar archivos en el bucket de origen
+    objetos = s3.list_objects_v2(Bucket=bucket_origen, Prefix=prefix).get("Contents", [])
+
+    for obj in objetos:
+        nombre_archivo = obj["Key"]
+
+        #Saltar archivos ya limpios o no-json
+        if not nombre_archivo.endswith(".json") or nombre_archivo.endswith(suffix):
+            continue
+
+        print(f"Procesando: {nombre_archivo}")
+        
+        #Leer archivo original desde el bucket de origen
+        response = s3.get_object(Bucket=bucket_origen, Key=nombre_archivo)
+        contenido = response["Body"].read().decode("utf-8")
+        peliculas = json.loads(contenido)
+        
+        #Limpiar las películas
+        peliculas_limpias = [limpiar_pelicula(p) for p in peliculas]
+        
+        #Convertir a JSON string
+        salida = json.dumps(peliculas_limpias, ensure_ascii=False, indent=2)
+        
+        #Crear nuevo nombre y subir al bucket destino
+        nombre_limpio = nombre_archivo.replace(".json", suffix)
+        s3.put_object(
+            Bucket=bucket_destino,
+            Key=nombre_limpio,
+            Body=salida.encode("utf-8")
+        )
+
+        print(f"Guardado limpio en {bucket_destino}/{nombre_limpio}")
+
+
+limpiar_varios_archivos_s3("data-lake", "movies", "peliculas", suffix="_limpias.json")
