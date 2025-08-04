@@ -80,4 +80,4 @@ def limpiar_varios_archivos_s3(bucket_origen, prefix, bucket_destino, suffix="_l
         print(f"Guardado limpio en {bucket_destino}/{nombre_limpio}")
 
 
-limpiar_varios_archivos_s3("data-lake-tmdb", "movies", "peliculas-limpias", suffix="_limpias.json")
+limpiar_varios_archivos_s3("data-lake", "movies", "peliculas", suffix="_limpias.json")
