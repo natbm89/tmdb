@@ -1,4 +1,4 @@
-# Vuelca en la base de datos el archivo de generos que se guardó inicialmente en el data-lake de S3. 
+# Vuelca en la BD el archivo de generos que se guardó inicialmente en el data-lake de S3. 
 # Se ha invocado desde la propia lambda, pues es un único archivo.
 
 import json
@@ -6,17 +6,44 @@ import boto3
 import psycopg
 import os
 
+# Conectar con Secrets Manager para obtener las credenciales de la BD.
+def get_rds_key():
+    secret_name = "tmdb/key"
+    region_name = "eu-north-1"
+
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        response = client.get_secret_value(SecretId=secret_name)
+        secret = json.loads(response['SecretString'])
+        return {
+            'username': secret.get('username'),
+            'password': secret.get('password'),
+            'host': secret.get('host'),
+            'port': secret.get('port'),
+            'dbname': secret.get('dbname')
+        }
+    except Exception as e:
+        print(f"Error al obtener el secreto: {e}")
+        raise e
+
 s3_client = boto3.client('s3')
 
 def lambda_handler(event, context):
+    # Leer los datos extraidos de Secrets Manager
+    rds_key = get_rds_key()
+    rds_host = rds_key['host']
+    rds_user = rds_key['username']
+    rds_password = rds_key['password']
+    rds_db = rds_key['dbname']
+    rds_port = rds_key['port']
     # Leer variables de entorno
-    bucket = os.environ['S3_BUCKET']
+    bucket_name = os.environ['S3_BUCKET']
     key = os.environ['KEY'] 
-    rds_host = os.environ['RDS_HOST']
-    rds_user = os.environ['RDS_USER']
-    rds_password = os.environ['RDS_PASSWORD']
-    rds_db = os.environ['RDS_DB']
-    rds_port = 5432
 
     try:
         response = s3_client.get_object(Bucket=bucket, Key=key)
@@ -26,6 +53,7 @@ def lambda_handler(event, context):
         generos = data.get("genres", [])
 
         with psycopg.connect(
+            # Conectar a la BD
             host=rds_host,
             dbname=rds_db,
             user=rds_user,

@@ -1,18 +1,46 @@
-# Vuelca de forma automatica en la base de datos los datos nuevos que se descargan a diario.
-# Utiliza los ficheros en bruto que se obtienen de la API y se hace la limpieza inicial con la propia lambda.
+# Vuelca de forma automatica en la BD los datos nuevos que se descargan a diario.
+# Utiliza los ficheros en bruto que se obtienen desde la API y se hace la limpieza inicial con la propia lambda.
 
 import json
 import boto3
 import psycopg
 import os
 
+# Cargar las credenciales de acceso a la BD desde SM
+def get_rds_key():
+    secret_name = "tmdb/key"
+    region_name = "eu-north-1"
+
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        response = client.get_secret_value(SecretId=secret_name)
+        secret = json.loads(response['SecretString'])
+        return {
+            'username': secret.get('username'),
+            'password': secret.get('password'),
+            'host': secret.get('host'),
+            'port': secret.get('port'),
+            'dbname': secret.get('dbname')
+        }
+    except Exception as e:
+        print(f"Error al obtener el secreto: {e}")
+        raise e
+
+
 def lambda_handler(event, context):
+    # Leer los datos extraidos de Secrets Manager
+    rds_key = get_rds_key()
+    rds_host = rds_key['host']
+    rds_user = rds_key['username']
+    rds_password = rds_key['password']
+    rds_db = rds_key['dbname']
+    rds_port = rds_key['port']
     # Leer variables de entorno
-    rds_host = os.environ['RDS_HOST']
-    rds_user = os.environ['RDS_USER']
-    rds_password = os.environ['RDS_PASSWORD']
-    rds_db = os.environ['RDS_DB']
-    rds_port = 5432
     bucket_name = os.environ['S3_BUCKET']
 
     # Extraer el nombre del archivo desde el evento de S3
@@ -24,6 +52,7 @@ def lambda_handler(event, context):
             'body': 'No se pudo extraer el nombre del archivo del evento.'
         }
 
+    # Conectar con la BD
     s3 = boto3.client('s3')
     conn = psycopg.connect(
         host=rds_host,
