@@ -1,0 +1,61 @@
+# IMPORTANTE
+# Antes de crear la base de datos hay que crear un servidor de PostgreSQL y una base de datos llamada TMDB.
+# Esto lo hacemos para conectar la base de datos con AWS Lambda y S3.
+# Para esto necesitamos unos credenciales de AWS y crear correctamente el servidor de PostreSQL dandole informacion sensible como la url de AWS,
+# una contraseña, el puerto... una vez hecho esto comprobamos que estamos conectados a la base de datos
+
+
+import pandas as pd
+
+import psycopg2
+from psycopg2 import sql
+
+database = "TMDB"
+password = "password"
+
+
+#Conprobacion conexion a la base de datos de TMDB
+with psycopg2.connect(host="localhost", user="postgres", password=password, database=None) as db:
+	with db.cursor() as cursor:
+		pass
+
+
+
+
+
+
+# CREATE TABLE peliculas (
+#     movie_id INT PRIMARY KEY UNIQUE,
+#     titulo VARCHAR(100) NOT NULL,
+#     release_date DATE,
+#     duracion INT,
+#     id_genero INT,
+#     vote_average NUMERIC(3,1),
+# 	vote_count INT,
+# 	origin_country VARCHAR(50),
+#     overview TEXT,
+#     revenue BIGINT,
+#     budget BIGINT,
+#     FOREIGN KEY (id_genero) REFERENCES generos(genero_id)
+# );
+
+# CREATE TABLE generos (
+#     genero_id INT PRIMARY KEY,
+#     nombre VARCHAR(50) NOT NULL
+# );
+
+# ALTER TABLE peliculas
+# ADD COLUMN adult BOOLEAN,
+# ADD COLUMN belong_to_collection VARCHAR,
+# ADD COLUMN genres VARCHAR(100),
+# ADD COLUMN original_language VARCHAR,
+# ADD COLUMN original_title VARCHAR,
+# ADD COLUMN popularity FLOAT,
+# ADD COLUMN production_companies VARCHAR,
+# ADD COLUMN production_countries VARCHAR,
+# ADD COLUMN spoken_languages VARCHAR,
+# ADD COLUMN status VARCHAR,
+# ADD COLUMN tagline VARCHAR;
+
+# ALTER TABLE peliculas
+# MODIFY COLUMN belong_to_collection VARCHAR(256);
