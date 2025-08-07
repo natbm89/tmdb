@@ -2,10 +2,10 @@
 import pandas as pd
 import numpy as np
 import psycopg2
-#from sklearn.model_selection import train_test_split
-#from sklearn.preprocessing import StandardScaler
-#from sklearn.ensemble import RandomForestClassifier
-#from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -171,6 +171,11 @@ if df is not None:
 
     print(f"Forma de las variables predictoras (X): {X.shape}")
     print(f"Forma de la variable objetivo (y): {y.shape}")
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    print(f"Tamaño del conjunto de entrenamiento: {X_train.shape[0]} muestras")
+    print(f"Tamaño del conjunto de prueba: {X_test.shape[0]} muestras")
 
 
 
