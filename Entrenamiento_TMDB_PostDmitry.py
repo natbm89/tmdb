@@ -7,6 +7,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+from collections import Counter
+import re 
 
 
 # Conexión BD
@@ -180,10 +182,10 @@ if df is not None:
     # Función para determinar el éxito
 
     def determinar_exito(axis):
-    return 1 if (axis['true_revenue'] > umbral_true_revenue and
-                 axis['vote_average'] > umbral_vote_average and
-                 axis['vote_count'] > umbral_vote_count and
-                 axis['popularity'] > umbral_popularity) else 0
+        return 1 if (axis['true_revenue'] > umbral_true_revenue and
+                     axis['vote_average'] > umbral_vote_average and
+                     axis['vote_count'] > umbral_vote_count and
+                     axis['popularity'] > umbral_popularity) else 0
 
 
     # Creamos la variable 'exito' (1 para éxito, 0 para fracaso)
@@ -318,7 +320,8 @@ if df is not None:
     df_pre_model = df_cleaned.copy()
 
     # Rellenamos con la media los valores nulos restantes en las columnas que competen
-    cols_fillna_mean = ['duracion', 'budget', 'vote_count', 'popularity', 'runtime', 'true_revenue', 'true_budget']
+    #cols_fillna_mean = ['duracion', 'budget', 'vote_count', 'popularity', 'runtime', 'true_revenue', 'true_budget']
+    cols_fillna_mean = ['budget', 'popularity', 'true_revenue', 'true_budget']
 
     for col in cols_fillna_mean:
         if col in df_pre_model.columns: 
