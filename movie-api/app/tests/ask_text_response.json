@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "datos": [
+    [
+      56569
+    ]
+  ],
+  "pregunta_original": "¿Cuántas películas hay de comedia?",
+  "sql_ejecutada": "\n            SELECT COUNT(*) as total_peliculas\n            FROM peliculas_generos pg\n            JOIN generos g ON pg.genero_id = g.genero_id \n            WHERE g.nombre = 'Comedy';\n            "
+}
