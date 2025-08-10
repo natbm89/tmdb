@@ -57,6 +57,53 @@ def get_database_schema():
     - genero_id (INTEGER, FOREIGN KEY -> generos.genero_id)
     """
 
+# Diccionario global de géneros
+GENRE_MAPPING = {
+    "comedy": "Comedy",
+    "comedia": "Comedy",
+    "action": "Action",
+    "acción": "Action",
+    "drama": "Drama",
+    "horror": "Horror",
+    "terror": "Horror",
+    "thriller": "Thriller",
+    "romance": "Romance",
+    "romántica": "Romance",
+    "adventure": "Adventure",
+    "aventura": "Adventure",
+    "animation": "Animation",
+    "animación": "Animation",
+    "documentary": "Documentary",
+    "documental": "Documentary",
+    "fantasy": "Fantasy",
+    "fantasía": "Fantasy",
+    "science fiction": "Science Fiction",
+    "ciencia ficción": "Science Fiction",
+    "sci-fi": "Science Fiction",
+    "mystery": "Mystery",
+    "misterio": "Mystery",
+    "crime": "Crime",
+    "crimen": "Crime",
+    "war": "War",
+    "guerra": "War",
+    "western": "Western",
+    "family": "Family",
+    "familiar": "Family",
+    "music": "Music",
+    "música": "Music",
+    "history": "History",
+    "historia": "History",
+    "tv movie": "TV Movie"
+}
+
+# Función auxiliar para detectar género en una pregunta
+def detect_genre_in_question(question: str) -> Optional[str]:
+    question_lower = question.lower()
+    for keyword, genre in GENRE_MAPPING.items():
+        if keyword in question_lower:
+            return genre
+    return None
+
 def generate_sql_with_gemini(question: str, schema: str) -> Optional[str]:
     # Genera SQL usando Gemini AI
     if not GEMINI_API_KEY:
@@ -217,31 +264,8 @@ def post_process_sql(sql_query):
     if not sql_query:
         return ""
     
-    # Mapeo de nombres comunes
-    mappings = {
-        r'\bmovies\b': 'peliculas',
-        r'\bfilms\b': 'peliculas',
-        r'\btitle\b': 'titulo',
-        r'\btitles\b': 'titulo',
-        r'\breleased\b': 'release_date',
-        r'\byear\b': 'EXTRACT(YEAR FROM release_date)',
-        r'\bgenres\b': 'generos',
-        r'\bgenre\b': 'generos',
-        r'\bname\b': 'nombre',
-        r'\brating\b': 'vote_average',
-        r'\bscore\b': 'vote_average',
-        r'\bbudget\b': 'budget',
-        r'\brevenue\b': 'revenue',
-        r'\bpopularity\b': 'popularity',
-        r'\bvotes\b': 'vote_count',
-        r'\bvotos\b': 'vote_count',
-        r'\bduration\b': 'duracion',
-        r'\bruntime\b': 'duracion',
-        r'\boverview\b': 'overview',
-        r'\bsinopsis\b': 'overview'
-    }
     
-    for pattern, replacement in mappings.items():
+    for pattern, replacement in GENRE_MAPPING.items():
         sql_query = re.sub(pattern, replacement, sql_query, flags=re.IGNORECASE)
     
     return sql_query
@@ -299,49 +323,7 @@ def generate_fallback_sql(question_en, original_question=""):
     
     # Contar películas por género específico
     elif ("cuántas" in combined_question or "cuantas" in combined_question or "how many" in question_lower) and ("película" in combined_question or "movie" in question_lower):
-        # Detectar el género en la pregunta
-        genre_mapping = {
-            "comedy": "Comedy",
-            "comedia": "Comedy",
-            "action": "Action",
-            "acción": "Action",
-            "drama": "Drama",
-            "horror": "Horror",
-            "terror": "Horror",
-            "thriller": "Thriller",
-            "romance": "Romance",
-            "romántica": "Romance",
-            "adventure": "Adventure",
-            "aventura": "Adventure",
-            "animation": "Animation",
-            "animación": "Animation",
-            "documentary": "Documentary",
-            "documental": "Documentary",
-            "fantasy": "Fantasy",
-            "fantasía": "Fantasy",
-            "science fiction": "Science Fiction",
-            "ciencia ficción": "Science Fiction",
-            "sci-fi": "Science Fiction",
-            "mystery": "Mystery",
-            "misterio": "Mystery",
-            "crime": "Crime",
-            "crimen": "Crime",
-            "war": "War",
-            "guerra": "War",
-            "western": "Western",
-            "family": "Family",
-            "familiar": "Family",
-            "music": "Music",
-            "música": "Music",
-            "history": "History",
-            "historia": "History",
-            "tv movie": "TV Movie"
-        }
-        detected_genre = None
-        for keyword, genre in genre_mapping.items():
-            if keyword in combined_question:
-                detected_genre = genre
-                break
+        detected_genre = detect_genre_in_question(combined_question)
         if detected_genre:
             return f"""
             SELECT COUNT(*) as total_peliculas
@@ -382,51 +364,8 @@ def generate_fallback_sql(question_en, original_question=""):
         limit = extract_number(original_question or question_en) or 5
         return f"SELECT titulo, popularity FROM peliculas WHERE popularity IS NOT NULL ORDER BY popularity DESC LIMIT {limit};"
     
-    # Detectar géneros específicos
-    genre_mapping = {
-        "comedy": "Comedy",
-        "comedia": "Comedy",
-        "action": "Action",
-        "acción": "Action",
-        "drama": "Drama",
-        "horror": "Horror",
-        "terror": "Horror",
-        "thriller": "Thriller",
-        "romance": "Romance",
-        "romántica": "Romance",
-        "adventure": "Adventure",
-        "aventura": "Adventure",
-        "animation": "Animation",
-        "animación": "Animation",
-        "documentary": "Documentary",
-        "documental": "Documentary",
-        "fantasy": "Fantasy",
-        "fantasía": "Fantasy",
-        "science fiction": "Science Fiction",
-        "ciencia ficción": "Science Fiction",
-        "sci-fi": "Science Fiction",
-        "mystery": "Mystery",
-        "misterio": "Mystery",
-        "crime": "Crime",
-        "crimen": "Crime",
-        "war": "War",
-        "guerra": "War",
-        "western": "Western",
-        "family": "Family",
-        "familiar": "Family",
-        "music": "Music",
-        "música": "Music",
-        "history": "History",
-        "historia": "History",
-        "tv movie": "TV Movie"
-    }
-    
     # Buscar si algún género está mencionado en la pregunta
-    detected_genre = None
-    for keyword, genre in genre_mapping.items():
-        if keyword in combined_question:
-            detected_genre = genre
-            break
+    detected_genre = detect_genre_in_question(combined_question)
     
     # Películas por género específico
     if detected_genre:

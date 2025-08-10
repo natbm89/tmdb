@@ -7,7 +7,7 @@ API completa para consultas en lenguaje natural sobre películas con generación
 - **NL2SQL con Gemini AI**: Convierte preguntas en español a consultas SQL usando Google Gemini
 - **Visualizaciones automáticas**: Gráficos generados dinámicamente con Matplotlib/Seaborn
 - **Predicción ML**: Modelo de Machine Learning para predecir el éxito de películas
-- **Base de datos PostgreSQL** en AWS RDS con 500,000+ películas
+- **Base de datos PostgreSQL** en AWS RDS con 1,200,000+ películas
 - **Interfaz web interactiva** con Swagger UI y documentación completa
 - **Cloud-ready**: Desplegable en AWS EC2 con configuración automatizada
 - **Página de inicio amigable**: Muestra los endpoints disponibles, las tecnologías utilizadas y acceso directo a ejemplos reales de uso
@@ -28,22 +28,21 @@ API completa para consultas en lenguaje natural sobre películas con generación
 
 ## Instalación Rápida
 
-### Entorno Conda (Recomendado)
+### Entorno virtual venv (Recomendado para AWS EC2)
 ```bash
-# Crear entorno conda
-conda create -n movie-api python=3.10 -y
-conda activate movie-api
-
 # Clonar repositorio
 git clone https://github.com/natbm89/tmdb.git
-cd movie-app
+cd tmdb/movie-api
+
+# Crear entorno virtual
+python3.11 -m venv venv
+source venv/bin/activate
 
 # Instalar dependencias
 pip install -r requirements.txt
 
 # Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tus credenciales
+nano .env
 
 # Ejecutar aplicación
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -156,8 +155,8 @@ movie_app/
 
 ### Base de Datos
 - **PostgreSQL en AWS RDS**: Base de datos relacional
-- **psycopg2-binary**: Driver optimizado
-- **500,000+ películas**: Dataset de TMDB
+- **psycopg3**: Driver optimizado
+- **1,200,000+ películas**: Dataset de TMDB
 
 ### Visualización
 - **Matplotlib 3.8+**: Gráficos estáticos profesionales
@@ -216,4 +215,4 @@ Proyecto académico - Hack a Boss (2025)
 
 **Estado del proyecto**: En producción  
 **Última actualización**: Agosto 2025  
-**Versión**: 2.0.0
+**Versión**: 2.0.1

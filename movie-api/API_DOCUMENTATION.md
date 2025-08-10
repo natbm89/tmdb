@@ -164,7 +164,6 @@ GET /ask-visual?question=¿Distribución de géneros?&format=image
 ### Machine Learning & NLP
 - **Google Gemini AI**: Conversión de lenguaje natural a SQL
 - **scikit-learn**: Modelo de predicción de éxito
-- **Deep Translator**: Soporte multiidioma
 
 ### Visualización
 - **Matplotlib**: Generación de gráficos estáticos
@@ -263,5 +262,5 @@ http://TU-DOMINIO:8000/predict
 
 - **Idioma**: Optimizado para consultas en español (pero técnicamente podría responder preguntas en inglés gracias a Gemini AI)
 - **Dominio**: Especializada en películas y entretenimiento
-- **Modelo ML**: Entrenado con datos hasta 2025
+- **Modelo ML**: Entrenado con datos de TMBD
 - **Visualizaciones**: Limitadas a tipos de gráfico predefinidos

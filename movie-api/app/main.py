@@ -145,7 +145,7 @@ async def root():
             </div>
             
             <div class="version">
-                <p>Movie Database API v2.0.0 | Powered by FastAPI</p>
+                <p>Movie Database API v2.0.1 | Powered by FastAPI</p>
             </div>
         </div>
     </body>
@@ -297,7 +297,7 @@ async def demo_page():
                 <a href="/redoc" class="docs-link">Documentación ReDoc</a>
             </div>
             <div class="version">
-                <p>Movie Database API v2.0.0 | Powered by FastAPI</p>
+                <p>Movie Database API v2.0.1 | Powered by FastAPI</p>
             </div>
         </div>
     </body>
