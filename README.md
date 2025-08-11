@@ -56,6 +56,59 @@ Este proyecto implementa un pipeline completo de análisis de películas utiliza
 
 ---
 
+## 🗺️ Arquitectura del Proyecto
+
+El siguiente diagrama muestra el flujo completo de datos, procesamiento y despliegue de la API de análisis y predicción de éxito de películas:
+
+```mermaid
+flowchart TD
+  %% Estilos
+  classDef aws fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1;
+  classDef proceso fill:#E8F5E9,stroke:#81C784,color:#1B5E20;
+  classDef modelo fill:#F3E5F5,stroke:#BA68C8,color:#4A148C;
+  classDef api fill:#FFF3E0,stroke:#FFB74D,color:#E65100;
+  classDef user fill:#FBE9E7,stroke:#FFAB91,color:#BF360C;
+  classDef infra fill:#E0F7FA,stroke:#4DD0E1,color:#006064;
+
+  %% Flujo de datos
+  TMDB["🎬 TMDB API"]
+  Lambda1["⚙️ AWS Lambda (E)"]:::aws
+  S3["🗂️ AWS S3 (Data Lake)"]:::aws
+  Lambda2["🔄 AWS Lambda (TL)"]:::aws
+  RDS["🐘 AWS RDS (PostgreSQL)"]:::aws
+  Modelo["🧠 Modelo ML (Scikit-learn)"]:::modelo
+  EC2["🖥️ AWS EC2 (FastAPI Deploy)"]:::infra
+  FastAPI["🚀 API FastAPI"]:::api
+  Usuario["👤 Usuario"]:::user
+
+  TMDB --> Lambda1 --> S3 --> Lambda2 --> RDS
+  RDS --> Modelo
+  Modelo --> FastAPI
+  RDS --> FastAPI
+  EC2 --> FastAPI
+  Usuario --> FastAPI
+
+  %% Endpoints alineados horizontalmente
+  subgraph Endpoints["📡 Endpoints"]
+    direction LR
+    Predict["🔍 /predict"]:::api
+    AskText["📨 /ask-text"]:::api
+    AskVisual["📊 /ask-visual"]:::api
+  end
+
+  FastAPI --> Endpoints
+```
+
+### 🔎 Resumen del flujo
+
+- **Extracción**: Datos de películas desde TMDB usando AWS Lambda.
+- **Almacenamiento**: S3 como Data Lake, luego transformación hacia RDS.
+- **Modelado**: Entrenamiento con Scikit-learn.
+- **API**: FastAPI desplegada en EC2, con endpoints `/predict`, `/ask-text`, `/ask-visual`.
+- **Interacción**: Usuario accede a la API para predicciones y consultas inteligentes vía Gemini IA.
+
+---
+
 ## 🚀 Tecnologías Utilizadas
 
 | Categoría         | Herramientas                          |
