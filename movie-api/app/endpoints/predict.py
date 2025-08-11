@@ -70,23 +70,10 @@ MovieInput = type('MovieInput', (BaseModel,), {
             "example": {
                         "Action": 1,
                         "Adventure": 1,
-                        "Animation": 0,
-                        "Comedy": 0,
-                        "Crime": 0,
-                        "Documentary": 0,
                         "Drama": 1,
                         "Family": 1,
                         "Fantasy": 1,
-                        "History": 0,
-                        "Horror": 0,
-                        "Music": 0,
-                        "Mystery": 0,
-                        "Romance": 0,
                         "Science Fiction": 1,
-                        "TV Movie": 0,
-                        "Thriller": 0,
-                        "War": 0,
-                        "Western": 0,
                         "adult_False": 1,
                         "adult_True": 0,
                         "budget": 460000000,
@@ -98,16 +85,10 @@ MovieInput = type('MovieInput', (BaseModel,), {
                         "num_production_countries": 1,
                         "num_spoken_languages": 2,
                         "original_language_en": 1,
-                        "original_language_es": 0,
-                        "original_language_fr": 0,
-                        "original_language_ja": 0,
                         "popularity": 85.0,
-                        "production_companies_20THCENTURYFOX": 0,
                         "production_companies_LIGHTSTORMENTERTAINMENT": 1,
                         "production_companies_20THCENTURYSTUDIOS": 1,
                         "production_companies_TSGENTERTAINMENT": 1,
-                        "production_companies_UNIVERSALPICTURES": 0,
-                        "production_companies_WARNERBROS.PICTURES": 0,
                         "production_countries_UNITEDSTATESOFAMERICA": 1,
                         "spoken_languages_ENGLISH": 1,
                         "spoken_languages_NA'VI": 1,
@@ -150,7 +131,7 @@ async def predict_movie_success(movie_data: MovieInput):
         )
     try:
         # Extraer las features en el orden correcto
-        X = [[getattr(movie_data, feat, 0.0) for feat in FEATURES_LIST]]
+        X = pd.DataFrame([[getattr(movie_data, feat, 0.0) for feat in FEATURES_LIST]], columns=FEATURES_LIST)
         # Escalar si corresponde
         if scaler is not None:
             X = scaler.transform(X)
