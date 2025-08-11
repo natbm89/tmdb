@@ -27,4 +27,4 @@ numpy==1.25.2
 pydantic==2.5.3
 
 # Utilidades HTTP
-requests==2.31.0
+requests==2.32.4
