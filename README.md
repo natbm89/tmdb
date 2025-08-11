@@ -72,15 +72,18 @@ Este proyecto implementa un pipeline completo de análisis de películas utiliza
 
 ## 📂 Estructura del Repositorio
 
-tmdb/ ├── Base de Datos/ # Scripts y estructura de la base de datos 
-      ├── ETL1/ # Primer pipeline de extracción 
-      ├── ETL2/ # Segundo pipeline con mejoras 
-      ├── ETL final/ # Versión final del pipeline ETL 
-      ├── Modelo ML/ # Entrenamiento y evaluación del modelo 
-      ├── movie-api/ # Código de la API con FastAPI 
-      ├── .gitignore # Exclusión de archivos innecesarios 
-      └── README.md # Documentación del proyecto
+Cada directorio contiene documentación con comentarios explicativos para facilitar la comprensión del flujo de trabajo.
 
+| Carpeta / Archivo     | Descripción 📌                          |
+|-----------------------|-----------------------------------------|
+| `Base de Datos/`      | Scripts y estructura de la base de datos PostgreSQL |
+| `ETL1/`               | Primer pipeline de extracción desde TMDB |
+| `ETL2/`               | Segunda versión del pipeline con mejoras |
+| `ETL final/`          | Versión final del pipeline ETL automatizado |
+| `Modelo ML/`          | Entrenamiento y evaluación del modelo de clasificación |
+| `movie-api/`          | Código de la API desarrollada con FastAPI |
+| `.gitignore`          | Exclusión de archivos innecesarios en Git |
+| `README.md`           | Documentación principal del proyecto |
 
 ---
 
