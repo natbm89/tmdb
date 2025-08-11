@@ -1,5 +1,12 @@
 # Movie Database API
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green)
+![License](https://img.shields.io/badge/license-Academic-lightgrey)
+![Status](https://img.shields.io/badge/status-In%20Production-brightgreen)
+
+  🔗 [Demo en vivo](http://56.228.82.19:8000/demo)
+
 API completa para consultas en lenguaje natural sobre películas con generación automática de visualizaciones y predicciones de éxito usando Machine Learning.
 
 ## Características Principales
@@ -141,6 +148,67 @@ movie_app/
 ├── API_DOCUMENTATION.md      # Documentación técnica
 └── README.md                 # Este archivo
 ```
+## Diagrama de Arquitectura
+
+```mermaid
+flowchart LR
+  %% Estilos generales
+  classDef entrada fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1;
+  classDef endpoint fill:#FFF3E0,stroke:#FFB74D,color:#E65100;
+  classDef proceso fill:#E8F5E9,stroke:#81C784,color:#1B5E20;
+  classDef modelo fill:#F3E5F5,stroke:#BA68C8,color:#4A148C;
+  classDef datos fill:#FBE9E7,stroke:#FFAB91,color:#BF360C;
+
+  %% Entrada principal
+  Usuario["👤 Usuario"]:::entrada
+  FastAPI["⚡ FastAPI"]:::entrada
+  Usuario --> FastAPI
+
+  %% Endpoints
+  AskText["📨 /ask-text (POST)"]:::endpoint
+  AskTextHTML["🌐 /ask-text-html (GET)"]:::endpoint
+  AskVisual["📊 /ask-visual (GET / POST)"]:::endpoint
+  Predict["🔍 /predict (POST)"]:::endpoint
+  FastAPI --> AskText
+  FastAPI --> AskTextHTML
+  FastAPI --> AskVisual
+  FastAPI --> Predict
+
+  %% Flujo compartido /ask-text y /ask-text-html
+  subgraph Flujo ask-text [🧠 Flujo /ask-text]
+    Gemini["🤖 Gemini IA"]:::proceso
+    SQLText["🧾 SQL generado"]:::proceso
+    PostgreSQL["🐘 PostgreSQL"]:::datos
+    JSONText["📦 JSON"]:::datos
+    HTML["📝 HTML"]:::datos
+
+    AskText --> Gemini
+    AskTextHTML --> Gemini
+    Gemini --> SQLText --> PostgreSQL
+    PostgreSQL --> HTML
+    PostgreSQL --> JSONText
+  end
+
+  %% Flujo /ask-visual
+  subgraph Flujo ask-visual [📊 Flujo /ask-visual]
+    VisualLibs["📈 Matplotlib / Seaborn"]:::proceso
+    Grafico["🖼️ Gráfico (GET)"]:::datos
+    JSONVisual["📦 JSON (POST)"]:::datos
+
+    AskVisual --> VisualLibs
+    VisualLibs --> Grafico
+    VisualLibs --> JSONVisual
+  end
+
+  %% Flujo /predict
+  subgraph Flujo predict [🔮 Flujo /predict]
+    Modelo["🧠 Modelo ML"]:::modelo
+    Probabilidad["📊 Probabilidad"]:::modelo
+    JSON["📦 JSON"]:::datos
+
+    Predict --> Modelo --> Probabilidad --> JSON
+  end
+```
 
 ## Stack Tecnológico
 
@@ -213,6 +281,7 @@ Proyecto académico - Hack a Boss (2025)
 
 ---
 
-**Estado del proyecto**: En producción  
+**Estado del proyecto**: Finalizado 
 **Última actualización**: Agosto 2025  
+
 **Versión**: 2.0.1
